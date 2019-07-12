@@ -12,6 +12,36 @@
     <link rel="stylesheet" href="css/main.css">
     <script src="js/jquery-1.12.4.min.js"></script>
     <script type="text/javascript" src="js/echarts.min.js"></script>
+    <script>
+        $(function(){
+            // 获取文章列表元素
+            var spannel_list = $(".spannel_list");
+
+            // 初始化文章数量
+            $.get({
+                url:"http://localhost:8000/admin/article_count",
+                success:function(backData){
+                    if(backData.code==200){
+                        spannel_list.children("div").eq(0).find("em").text(backData.data.all_count);
+                        spannel_list.children("div").eq(1).find("em").text(backData.data.day_count);
+                    }
+                }
+
+            });
+
+            // 初始化文章评论数量
+            $.get({
+                url:"http://localhost:8000/admin/comment_count",
+                success:function(backData){
+                    if(backData.code==200){
+                        spannel_list.children("div").eq(2).find("em").text(backData.data.all_count);
+                        spannel_list.children("div").eq(3).find("em").text(backData.data.day_count);
+                    }
+                }
+
+            });
+        });
+    </script>
 </head>
 
 <body>
