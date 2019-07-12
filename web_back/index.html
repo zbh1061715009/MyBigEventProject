@@ -11,6 +11,39 @@
     <link rel="stylesheet" href="css/iconfont.css">
     <link rel="stylesheet" href="css/main.css">
     <script src="js/jquery-1.12.4.min.js"></script>
+    <script>
+        $(function(){
+            // 获取用户信息元素
+            var user_info = $(".user_info");
+            // 获取退出按钮用户头像元素
+            var user_center_link = $(".user_center_link");
+
+            // 请求用户信息
+            $.get({
+                url:"http://localhost:8000/admin/getuser",
+                success:function(backData){
+                    if(backData.code==200){
+                        user_info.children("span").html("欢迎&nbsp;&nbsp;"+backData.data.nickname);
+                        user_info.children("img").attr("src",backData.data.user_pic);
+                        user_center_link.children("img").attr("src",backData.data.user_pic);
+                    }
+                },
+            });
+            // 添加点击登出按钮事件
+            user_center_link.children().eq(2).click(function(e){
+                e.preventDefault();
+                $.post({
+                    url:"http://localhost:8000/admin/logout",
+                    success:function(backData){
+                        // console.log(backData);
+                        if(backData.code==200){
+                            location.href = "login.html";
+                        }
+                    },
+                });
+            });
+        });
+    </script>
 </head>
 
 <body>
