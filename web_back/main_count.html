@@ -112,6 +112,7 @@
                 }
             });
 
+            // 封装折线统计图生成函数
             function total(aList) {
                 var oChart = echarts.init(document.getElementById('curve_show'));
                 var aList_all = aList || [
@@ -233,8 +234,14 @@
                 oChart.setOption(chartopt);
             }
 
+            // 获取文章类型数组供月文章访问量功能模块
+            var serieskeyData;
+            // 文章类型数组变量
+            var ColorArr;
+
             // 各类型文章数量统计功能模块
             oPieoptFunc();
+            // 请求数据
             $.get({
                 url: "http://localhost:8000/admin/article_category_count",
                 success: function (backData) {
@@ -242,23 +249,30 @@
                     var keyData;
                     var oPieoptObject;
                     if (backData.code == 200) {
+                        // 初始化数组keyData及oPieoptObject
                         keyData = [];
                         oPieoptObject = [];
+                        // 初始化文章类型统计图颜色数组
+                        ColorArr = [];
 
                         var arr = backData.data;
 
+                        // 遍历backData.data,获取各类型文章统计数量
                         for (var i = 0; i < arr.length; i++) {
                             keyData.push(arr[i].type);
                             oPieoptObject.push({ name: arr[i].type, value: arr[i].all_count });
+                            ColorArr.push(getColor());
                         }
                         // console.log(keyData);
                         // console.log(oPieoptObject);
                     }
-                    oPieoptFunc(keyData,oPieoptObject);
+                    serieskeyData = keyData;
+                    oPieoptFunc(keyData, oPieoptObject, ColorArr);
                 },
             });
 
-            function oPieoptFunc(keyData, oPieoptObject) {
+            // 封装饼形统计图生成函数
+            function oPieoptFunc(keyData, oPieoptObject, ColorArr) {
                 var kData = keyData || ['奇趣事', '会生活', '爱旅行', '趣美味'];
                 var oPieoptO = oPieoptObject
                     || [
@@ -267,6 +281,7 @@
                         { value: 260, name: '爱旅行' },
                         { value: 180, name: '趣美味' }
                     ];
+                var Color = ColorArr || ['#5885e8', '#13cfd5', '#00ce68', '#ff9565'];
                 var oPie = echarts.init(document.getElementById('pie_show'));
                 var oPieopt =
                 {
@@ -279,10 +294,11 @@
                         trigger: 'item',
                         formatter: "{a} <br/>{b} : {c} ({d}%)"
                     },
-                    color: ['#5885e8', '#13cfd5', '#00ce68', '#ff9565'],
+                    color: Color,
                     legend: {
                         x: 'center',
                         top: 65,
+                        // data属性数据对应数组kData
                         data: kData
                     },
                     toolbox: {
@@ -315,6 +331,7 @@
                             type: 'pie',
                             radius: ['45%', '60%'],
                             center: ['50%', '65%'],
+                            // data属性数据对应数组oPieoptO
                             data: oPieoptO
                         }
                     ]
@@ -322,10 +339,137 @@
                 oPie.setOption(oPieopt);
             }
 
+            // 随机生成颜色
+            function getColor() {
+                var str = "";
+                // 随机颜色数组拼接数组
+                var ColorArr = ["a", "b", "c", "d", "e", "f", 1, 2, 3, 4, 5, 6, 7, 8, 9, 0];
+                // 组合随机
+                while (str == "" || str == "#ffffff") {
+                    for (var i = 0; i < 6; i++) {
+                        str += ColorArr[parseInt(Math.random() * ColorArr.length)].toString();
+                    }
+                }
+                if (str.length > 0) {
+                    str = "#" + str;
+                }
+                return str;
+            }
 
+            // 月文章访问量功能模块
+            // 初始化月文章访问量功能模块
+            // setOptionFunc();
+
+            // 请求月文章访问量数据
+            $.get({
+                url: "http://localhost:8000/admin/article_category_visit",
+                success: function (backData) {
+                    // console.log(backData);
+                    var monthData;
+                    var seriesData;
+                    if (backData.code == 200) {
+                        // 初始化月份数组monthData
+                        monthData = [];
+                        // 初始化统计图形条数组seriesData
+                        seriesData = [];
+                        // 数组seriesDataCopy承载seriesData数组中对象的可变属性,提供seriesData数组构建数据
+                        var seriesDataCopy = [];
+
+                        // 文章类型初始化对象
+                        for (var i = 0; i < serieskeyData.length; i++) {
+                            seriesDataCopy.push({
+                                name: serieskeyData[i],
+                                data: [],
+                                color: ColorArr[i]
+                            });
+                        }
+
+                        // console.log(seriesDataCopy);
+
+                        var arr = backData.data;
+
+                        for (var i = 0; i < arr.length; i++) {
+                            // 封装月份
+                            monthData.push(arr[i].month);
+
+                            // 遍历backData.data.all_count数组,并将all_count
+                            // 数组中对应文章类型名称的统计数量按月份从小到大封装到
+                            // 数组all_count中
+                            // console.log(arr[0].all_count[0]);
+                            // console.log(seriesDataCopy[0].name)
+                            for (var j = 0; j < arr[i].all_count.length; j++) {
+                                if (seriesDataCopy[j].name == arr[i].all_count[j].type) {
+                                    seriesDataCopy[j].data.push(arr[i].all_count[j].count);
+                                }
+                            }
+                        }
+
+                        // 封装条形统计图数据对象封装
+                        for (var i = 0; i < seriesDataCopy.length; i++) {
+                            seriesData.push(
+                                {
+                                    name: seriesDataCopy[i].name,
+                                    type: 'bar',
+                                    barWidth: 20,
+                                    itemStyle: {
+                                        normal: { areaStyle: { type: 'default' }, color: seriesDataCopy[i].color }
+                                    },
+                                    data: seriesDataCopy[i].data
+                                }
+                            )
+                        }
+                        // console.log(seriesData);
+                    }
+                    // setOptionFunc(serieskeyData, monthData, seriesData);
+                }
+            });
+
+            // 获取文章类别数组keyData
+            var keyD = ['奇趣事', '会生活', '爱旅行', '趣美味'];
+            // 获取文章数量统计的月数
+            var monthD = ['1月', '2月', '3月', '4月', '5月'];
+            // 获取生成条形统计图数组对象参数
+            var seriesD = [
+                {
+                    name: '奇趣事',
+                    type: 'bar',
+                    barWidth: 20,
+                    itemStyle: {
+                        normal: { areaStyle: { type: 'default' }, color: '#fd956a' }
+                    },
+                    data: [800, 708, 920, 1090, 1200]
+                },
+                {
+                    name: '会生活',
+                    type: 'bar',
+                    barWidth: 20,
+                    itemStyle: {
+                        normal: { areaStyle: { type: 'default' }, color: '#2bb6db' }
+                    },
+                    data: [400, 468, 520, 690, 800]
+                },
+                {
+                    name: '爱旅行',
+                    type: 'bar',
+                    barWidth: 20,
+                    itemStyle: {
+                        normal: { areaStyle: { type: 'default' }, color: '#13cfd5' }
+                    },
+                    data: [500, 668, 520, 790, 900]
+                },
+                {
+                    name: '趣美味',
+                    type: 'bar',
+                    barWidth: 20,
+                    itemStyle: {
+                        normal: { areaStyle: { type: 'default' }, color: '#00ce68' }
+                    },
+                    data: [600, 508, 720, 890, 1000]
+                }
+            ];
 
             var oColumn = this.echarts.init(document.getElementById('column_show'));
-            var oColumnopt =
+            var setOption =
             {
                 title: {
                     text: '文章访问量',
@@ -336,7 +480,7 @@
                     trigger: 'axis'
                 },
                 legend: {
-                    data: ['奇趣事', '会生活', '爱旅行', '趣美味'],
+                    data: keyD,
                     top: '40'
                 },
                 toolbox: {
@@ -353,7 +497,7 @@
                 xAxis: [
                     {
                         type: 'category',
-                        data: ['1月', '2月', '3月', '4月', '5月']
+                        data: monthD
                     }
                 ],
                 yAxis: [
@@ -362,44 +506,7 @@
                         type: 'value'
                     }
                 ],
-                series: [
-                    {
-                        name: '奇趣事',
-                        type: 'bar',
-                        barWidth: 20,
-                        itemStyle: {
-                            normal: { areaStyle: { type: 'default' }, color: '#fd956a' }
-                        },
-                        data: [800, 708, 920, 1090, 1200]
-                    },
-                    {
-                        name: '会生活',
-                        type: 'bar',
-                        barWidth: 20,
-                        itemStyle: {
-                            normal: { areaStyle: { type: 'default' }, color: '#2bb6db' }
-                        },
-                        data: [400, 468, 520, 690, 800]
-                    },
-                    {
-                        name: '爱旅行',
-                        type: 'bar',
-                        barWidth: 20,
-                        itemStyle: {
-                            normal: { areaStyle: { type: 'default' }, color: '#13cfd5' }
-                        },
-                        data: [500, 668, 520, 790, 900]
-                    },
-                    {
-                        name: '趣美味',
-                        type: 'bar',
-                        barWidth: 20,
-                        itemStyle: {
-                            normal: { areaStyle: { type: 'default' }, color: '#00ce68' }
-                        },
-                        data: [600, 508, 720, 890, 1000]
-                    }
-                ],
+                series: seriesD,
                 grid: {
                     show: true,
                     x: 50,
@@ -430,6 +537,123 @@
                     }]
             };
             oColumn.setOption(oColumnopt);
+
+            // 封装条形统计图生成函数
+            // function setOptionFunc(keyData, monthData, seriesData) {
+            //     // 获取文章类别数组keyData
+            //     var keyD = keyData || ['奇趣事', '会生活', '爱旅行', '趣美味'];
+            //     // 获取文章数量统计的月数
+            //     var monthD = monthData || ['1月', '2月', '3月', '4月', '5月'];
+            //     // 获取生成条形统计图数组对象参数
+            //     var seriesD = seriesData || [
+            //         {
+            //             name: '奇趣事',
+            //             type: 'bar',
+            //             barWidth: 20,
+            //             itemStyle: {
+            //                 normal: { areaStyle: { type: 'default' }, color: '#fd956a' }
+            //             },
+            //             data: [800, 708, 920, 1090, 1200]
+            //         },
+            //         {
+            //             name: '会生活',
+            //             type: 'bar',
+            //             barWidth: 20,
+            //             itemStyle: {
+            //                 normal: { areaStyle: { type: 'default' }, color: '#2bb6db' }
+            //             },
+            //             data: [400, 468, 520, 690, 800]
+            //         },
+            //         {
+            //             name: '爱旅行',
+            //             type: 'bar',
+            //             barWidth: 20,
+            //             itemStyle: {
+            //                 normal: { areaStyle: { type: 'default' }, color: '#13cfd5' }
+            //             },
+            //             data: [500, 668, 520, 790, 900]
+            //         },
+            //         {
+            //             name: '趣美味',
+            //             type: 'bar',
+            //             barWidth: 20,
+            //             itemStyle: {
+            //                 normal: { areaStyle: { type: 'default' }, color: '#00ce68' }
+            //             },
+            //             data: [600, 508, 720, 890, 1000]
+            //         }
+            //     ];
+
+            //     var oColumn = this.echarts.init(document.getElementById('column_show'));
+            //     var setOption =
+            //     {
+            //         title: {
+            //             text: '文章访问量',
+            //             left: 'center',
+            //             top: '10'
+            //         },
+            //         tooltip: {
+            //             trigger: 'axis'
+            //         },
+            //         legend: {
+            //             data: keyData,
+            //             top: '40'
+            //         },
+            //         toolbox: {
+            //             show: true,
+            //             feature: {
+            //                 mark: { show: true },
+            //                 dataView: { show: true, readOnly: false },
+            //                 magicType: { show: true, type: ['line', 'bar'] },
+            //                 restore: { show: true },
+            //                 saveAsImage: { show: true }
+            //             }
+            //         },
+            //         calculable: true,
+            //         xAxis: [
+            //             {
+            //                 type: 'category',
+            //                 data: monthD
+            //             }
+            //         ],
+            //         yAxis: [
+            //             {
+            //                 name: '访问量',
+            //                 type: 'value'
+            //             }
+            //         ],
+            //         series: seriesD,
+            //         grid: {
+            //             show: true,
+            //             x: 50,
+            //             x2: 30,
+            //             y: 80,
+            //             height: 260
+            //         },
+            //         dataZoom: [//给x轴设置滚动条
+            //             {
+            //                 start: 0,//默认为0
+            //                 end: 100 - 1000 / 31,//默认为100
+            //                 type: 'slider',
+            //                 show: true,
+            //                 xAxisIndex: [0],
+            //                 handleSize: 0,//滑动条的 左右2个滑动条的大小
+            //                 height: 8,//组件高度
+            //                 left: 45, //左边的距离
+            //                 right: 50,//右边的距离
+            //                 bottom: 26,//右边的距离
+            //                 handleColor: '#ddd',//h滑动图标的颜色
+            //                 handleStyle: {
+            //                     borderColor: "#cacaca",
+            //                     borderWidth: "1",
+            //                     shadowBlur: 2,
+            //                     background: "#ddd",
+            //                     shadowColor: "#ddd",
+            //                 }
+            //             }]
+            //     };
+            //     oColumn.setOption(oColumnopt);
+            // }
 
         </script>
 
