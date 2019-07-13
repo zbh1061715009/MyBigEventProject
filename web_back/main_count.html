@@ -358,7 +358,7 @@
 
             // 月文章访问量功能模块
             // 初始化月文章访问量功能模块
-            // setOptionFunc();
+            setOptionFunc();
 
             // 请求月文章访问量数据
             $.get({
@@ -420,132 +420,49 @@
                         }
                         // console.log(seriesData);
                     }
-                    // setOptionFunc(serieskeyData, monthData, seriesData);
+                    setOptionFunc(serieskeyData, monthData, seriesData);
                 }
             });
 
-            // 获取文章类别数组keyData
-            var keyD = ['奇趣事', '会生活', '爱旅行', '趣美味'];
-            // 获取文章数量统计的月数
-            var monthD = ['1月', '2月', '3月', '4月', '5月'];
-            // 获取生成条形统计图数组对象参数
-            var seriesD = [
-                {
-                    name: '奇趣事',
-                    type: 'bar',
-                    barWidth: 20,
-                    itemStyle: {
-                        normal: { areaStyle: { type: 'default' }, color: '#fd956a' }
-                    },
-                    data: [800, 708, 920, 1090, 1200]
-                },
-                {
-                    name: '会生活',
-                    type: 'bar',
-                    barWidth: 20,
-                    itemStyle: {
-                        normal: { areaStyle: { type: 'default' }, color: '#2bb6db' }
-                    },
-                    data: [400, 468, 520, 690, 800]
-                },
-                {
-                    name: '爱旅行',
-                    type: 'bar',
-                    barWidth: 20,
-                    itemStyle: {
-                        normal: { areaStyle: { type: 'default' }, color: '#13cfd5' }
-                    },
-                    data: [500, 668, 520, 790, 900]
-                },
-                {
-                    name: '趣美味',
-                    type: 'bar',
-                    barWidth: 20,
-                    itemStyle: {
-                        normal: { areaStyle: { type: 'default' }, color: '#00ce68' }
-                    },
-                    data: [600, 508, 720, 890, 1000]
-                }
-            ];
-
-            var oColumn = this.echarts.init(document.getElementById('column_show'));
-            var setOption =
-            {
-                title: {
-                    text: '文章访问量',
-                    left: 'center',
-                    top: '10'
-                },
-                tooltip: {
-                    trigger: 'axis'
-                },
-                legend: {
-                    data: keyD,
-                    top: '40'
-                },
-                toolbox: {
-                    show: true,
-                    feature: {
-                        mark: { show: true },
-                        dataView: { show: true, readOnly: false },
-                        magicType: { show: true, type: ['line', 'bar'] },
-                        restore: { show: true },
-                        saveAsImage: { show: true }
-                    }
-                },
-                calculable: true,
-                xAxis: [
-                    {
-                        type: 'category',
-                        data: monthD
-                    }
-                ],
-                yAxis: [
-                    {
-                        name: '访问量',
-                        type: 'value'
-                    }
-                ],
-                series: seriesD,
-                grid: {
-                    show: true,
-                    x: 50,
-                    x2: 30,
-                    y: 80,
-                    height: 260
-                },
-                dataZoom: [//给x轴设置滚动条
-                    {
-                        start: 0,//默认为0
-                        end: 100 - 1000 / 31,//默认为100
-                        type: 'slider',
-                        show: true,
-                        xAxisIndex: [0],
-                        handleSize: 0,//滑动条的 左右2个滑动条的大小
-                        height: 8,//组件高度
-                        left: 45, //左边的距离
-                        right: 50,//右边的距离
-                        bottom: 26,//右边的距离
-                        handleColor: '#ddd',//h滑动图标的颜色
-                        handleStyle: {
-                            borderColor: "#cacaca",
-                            borderWidth: "1",
-                            shadowBlur: 2,
-                            background: "#ddd",
-                            shadowColor: "#ddd",
-                        }
-                    }]
-            };
-            oColumn.setOption(oColumnopt);
-
-            // 封装条形统计图生成函数
-            // function setOptionFunc(keyData, monthData, seriesData) {
-            //     // 获取文章类别数组keyData
-            //     var keyD = keyData || ['奇趣事', '会生活', '爱旅行', '趣美味'];
-            //     // 获取文章数量统计的月数
-            //     var monthD = monthData || ['1月', '2月', '3月', '4月', '5月'];
-            //     // 获取生成条形统计图数组对象参数
-            //     var seriesD = seriesData || [
+            // var oColumn = this.echarts.init(document.getElementById('column_show'));
+            // var oColumnopt =
+            // {
+            //     title: {
+            //         text: '文章访问量',
+            //         left: 'center',
+            //         top: '10'
+            //     },
+            //     tooltip: {
+            //         trigger: 'axis'
+            //     },
+            //     legend: {
+            //         data: ['奇趣事', '会生活', '爱旅行', '趣美味'],
+            //         top: '40'
+            //     },
+            //     toolbox: {
+            //         show: true,
+            //         feature: {
+            //             mark: { show: true },
+            //             dataView: { show: true, readOnly: false },
+            //             magicType: { show: true, type: ['line', 'bar'] },
+            //             restore: { show: true },
+            //             saveAsImage: { show: true }
+            //         }
+            //     },
+            //     calculable: true,
+            //     xAxis: [
+            //         {
+            //             type: 'category',
+            //             data: ['1月', '2月', '3月', '4月', '5月']
+            //         }
+            //     ],
+            //     yAxis: [
+            //         {
+            //             name: '访问量',
+            //             type: 'value'
+            //         }
+            //     ],
+            //     series: [
             //         {
             //             name: '奇趣事',
             //             type: 'bar',
@@ -582,78 +499,154 @@
             //             },
             //             data: [600, 508, 720, 890, 1000]
             //         }
-            //     ];
+            //     ],
+            //     grid: {
+            //         show: true,
+            //         x: 50,
+            //         x2: 30,
+            //         y: 80,
+            //         height: 260
+            //     },
+            //     dataZoom: [//给x轴设置滚动条
+            //         {
+            //             start: 0,//默认为0
+            //             end: 100 - 1000 / 31,//默认为100
+            //             type: 'slider',
+            //             show: true,
+            //             xAxisIndex: [0],
+            //             handleSize: 0,//滑动条的 左右2个滑动条的大小
+            //             height: 8,//组件高度
+            //             left: 45, //左边的距离
+            //             right: 50,//右边的距离
+            //             bottom: 26,//右边的距离
+            //             handleColor: '#ddd',//h滑动图标的颜色
+            //             handleStyle: {
+            //                 borderColor: "#cacaca",
+            //                 borderWidth: "1",
+            //                 shadowBlur: 2,
+            //                 background: "#ddd",
+            //                 shadowColor: "#ddd",
+            //             }
+            //         }]
+            // };
+            // oColumn.setOption(oColumnopt);
 
-            //     var oColumn = this.echarts.init(document.getElementById('column_show'));
-            //     var setOption =
-            //     {
-            //         title: {
-            //             text: '文章访问量',
-            //             left: 'center',
-            //             top: '10'
-            //         },
-            //         tooltip: {
-            //             trigger: 'axis'
-            //         },
-            //         legend: {
-            //             data: keyData,
-            //             top: '40'
-            //         },
-            //         toolbox: {
-            //             show: true,
-            //             feature: {
-            //                 mark: { show: true },
-            //                 dataView: { show: true, readOnly: false },
-            //                 magicType: { show: true, type: ['line', 'bar'] },
-            //                 restore: { show: true },
-            //                 saveAsImage: { show: true }
-            //             }
-            //         },
-            //         calculable: true,
-            //         xAxis: [
-            //             {
-            //                 type: 'category',
-            //                 data: monthD
-            //             }
-            //         ],
-            //         yAxis: [
-            //             {
-            //                 name: '访问量',
-            //                 type: 'value'
-            //             }
-            //         ],
-            //         series: seriesD,
-            //         grid: {
-            //             show: true,
-            //             x: 50,
-            //             x2: 30,
-            //             y: 80,
-            //             height: 260
-            //         },
-            //         dataZoom: [//给x轴设置滚动条
-            //             {
-            //                 start: 0,//默认为0
-            //                 end: 100 - 1000 / 31,//默认为100
-            //                 type: 'slider',
-            //                 show: true,
-            //                 xAxisIndex: [0],
-            //                 handleSize: 0,//滑动条的 左右2个滑动条的大小
-            //                 height: 8,//组件高度
-            //                 left: 45, //左边的距离
-            //                 right: 50,//右边的距离
-            //                 bottom: 26,//右边的距离
-            //                 handleColor: '#ddd',//h滑动图标的颜色
-            //                 handleStyle: {
-            //                     borderColor: "#cacaca",
-            //                     borderWidth: "1",
-            //                     shadowBlur: 2,
-            //                     background: "#ddd",
-            //                     shadowColor: "#ddd",
-            //                 }
-            //             }]
-            //     };
-            //     oColumn.setOption(oColumnopt);
-            // }
+            // 封装条形统计图生成函数
+            function setOptionFunc(keyData, monthData, seriesData) {
+                // 获取文章类别数组keyData
+                var keyD = keyData || ['奇趣事', '会生活', '爱旅行', '趣美味'];
+                // 获取文章数量统计的月数
+                var monthD = monthData || ['1月', '2月', '3月', '4月', '5月'];
+                // 获取生成条形统计图数组对象参数
+                var seriesD = seriesData || [
+                    {
+                        name: '奇趣事',
+                        type: 'bar',
+                        barWidth: 20,
+                        itemStyle: {
+                            normal: { areaStyle: { type: 'default' }, color: '#fd956a' }
+                        },
+                        data: [800, 708, 920, 1090, 1200]
+                    },
+                    {
+                        name: '会生活',
+                        type: 'bar',
+                        barWidth: 20,
+                        itemStyle: {
+                            normal: { areaStyle: { type: 'default' }, color: '#2bb6db' }
+                        },
+                        data: [400, 468, 520, 690, 800]
+                    },
+                    {
+                        name: '爱旅行',
+                        type: 'bar',
+                        barWidth: 20,
+                        itemStyle: {
+                            normal: { areaStyle: { type: 'default' }, color: '#13cfd5' }
+                        },
+                        data: [500, 668, 520, 790, 900]
+                    },
+                    {
+                        name: '趣美味',
+                        type: 'bar',
+                        barWidth: 20,
+                        itemStyle: {
+                            normal: { areaStyle: { type: 'default' }, color: '#00ce68' }
+                        },
+                        data: [600, 508, 720, 890, 1000]
+                    }
+                ];
+
+                var oColumn = this.echarts.init(document.getElementById('column_show'));
+                var oColumnopt =
+                {
+                    title: {
+                        text: '文章访问量',
+                        left: 'center',
+                        top: '10'
+                    },
+                    tooltip: {
+                        trigger: 'axis'
+                    },
+                    legend: {
+                        data: keyD,
+                        top: '40'
+                    },
+                    toolbox: {
+                        show: true,
+                        feature: {
+                            mark: { show: true },
+                            dataView: { show: true, readOnly: false },
+                            magicType: { show: true, type: ['line', 'bar'] },
+                            restore: { show: true },
+                            saveAsImage: { show: true }
+                        }
+                    },
+                    calculable: true,
+                    xAxis: [
+                        {
+                            type: 'category',
+                            data: monthD
+                        }
+                    ],
+                    yAxis: [
+                        {
+                            name: '访问量',
+                            type: 'value'
+                        }
+                    ],
+                    series: seriesD,
+                    grid: {
+                        show: true,
+                        x: 50,
+                        x2: 30,
+                        y: 80,
+                        height: 260
+                    },
+                    dataZoom: [//给x轴设置滚动条
+                        {
+                            start: 0,//默认为0
+                            end: 100 - 1000 / 31,//默认为100
+                            type: 'slider',
+                            show: true,
+                            xAxisIndex: [0],
+                            handleSize: 0,//滑动条的 左右2个滑动条的大小
+                            height: 8,//组件高度
+                            left: 45, //左边的距离
+                            right: 50,//右边的距离
+                            bottom: 26,//右边的距离
+                            handleColor: '#ddd',//h滑动图标的颜色
+                            handleStyle: {
+                                borderColor: "#cacaca",
+                                borderWidth: "1",
+                                shadowBlur: 2,
+                                background: "#ddd",
+                                shadowColor: "#ddd",
+                            }
+                        }]
+                };
+                oColumn.setOption(oColumnopt);
+            }
 
         </script>
 
